@@ -10,6 +10,7 @@
     "jsr:@std/internal@^1.0.5": "1.0.5",
     "npm:@faker-js/faker@^9.1.0": "9.1.0",
     "npm:@noble/curves@^1.6.0": "1.6.0",
+    "npm:@noble/hashes@*": "1.5.0",
     "npm:@noble/hashes@^1.5.0": "1.5.0",
     "npm:asn1.js@^5.4.1": "5.4.1",
     "npm:asn1js@*": "3.0.5",

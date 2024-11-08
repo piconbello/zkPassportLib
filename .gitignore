@@ -9,3 +9,4 @@ egemen.json
 mock/ldsSerializer.test.json
 notes.md
 justfile
+**/*.ldif
