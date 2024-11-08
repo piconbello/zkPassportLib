@@ -1,10 +1,9 @@
-import * as asn1js from "npm:asn1js";
-import {
-  Certificate as PkiCertificate,
-  ContentInfo,
-  SignedData,
-} from "npm:pkijs";
+import * as asn1js from "asn1js";
+
+import { Certificate as PkiCertificate, ContentInfo, SignedData } from "pkijs";
+import * as pkijs from "pkijs";
 import { encodeBase64 } from "@std/encoding/base64";
+import { certificatePEM } from "../certificates/common.ts";
 
 export interface ValidityPeriod {
   notBefore: Date;
@@ -237,6 +236,7 @@ interface ParsedSOD {
   signedAttributes: string;
   digestAlgorithm: string;
   signature: string;
+  certificate: pkijs.Certificate;
 }
 
 export function parseSodSimpler(sodBytes: Uint8Array): ParsedSOD {
@@ -285,6 +285,9 @@ export function parseSodSimpler(sodBytes: Uint8Array): ParsedSOD {
     signedData.signerInfos[0].signature.valueBlock.valueHex,
   );
 
+  const schema = signedData.certificates![0].toSchema();
+  const certificate = new pkijs.Certificate({ schema: schema });
+
   return {
     dgHashes,
     lds: encodeBase64(
@@ -297,12 +300,13 @@ export function parseSodSimpler(sodBytes: Uint8Array): ParsedSOD {
       signedData.signerInfos[0].digestAlgorithm.algorithmId,
     ),
     signature: encodeBase64(signature),
+    certificate: certificate,
   };
 }
 
 // Example usage
 async function main() {
-  const sodBytes = await Deno.readFile("halit-sod");
+  const sodBytes = await Deno.readFile("./certificates/halit-sod");
   const result = parseSodSimpler(sodBytes);
   console.log("\n=== SOD Parsing Results ===");
   console.log(JSON.stringify(result, (key, value) => {
@@ -314,5 +318,24 @@ async function main() {
 }
 
 if (import.meta.main) {
-  main();
+  if (Deno.args.length !== 1) {
+    console.error("Usage: script.ts <sod_file_path>");
+    Deno.exit(1);
+  }
+  const sodFile = Deno.args[0];
+  const sodBytes = Deno.readFileSync(sodFile);
+  const result = parseSodSimpler(sodBytes);
+  console.log("\n=== SOD Parsing Results ===");
+  console.log(certificatePEM(result.certificate));
+  console.log(
+    JSON.stringify({
+      ...result,
+      certificate: certificatePEM(result.certificate),
+    }, (key, value) => {
+      if (value instanceof Uint8Array) {
+        return encodeBase64(value);
+      }
+      return value;
+    }, 2),
+  );
 }

@@ -3,6 +3,7 @@ node_modules
 o1js
 halit.json
 halit-sod
+ege-sod
 halit-cert.json
 mock.json
 egemen.json
@@ -10,3 +11,4 @@ mock/ldsSerializer.test.json
 notes.md
 justfile
 **/*.ldif
+**/*.der

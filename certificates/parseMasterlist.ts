@@ -99,13 +99,15 @@ function extractEContentFromCMS(cmsData: Uint8Array): Uint8Array {
  * Extracts certificates from eContent
  * @param eContent - Decoded eContent data
  */
-function extractCertificatesFromContent(eContent: Uint8Array): Uint8Array[] {
+function extractCertificatesFromContent(
+  eContent: Uint8Array,
+): pkijs.Certificate[] {
   const asn1Content = asn1js.fromBER(eContent.buffer);
   if (asn1Content.offset === -1) {
     throw new Error("Failed to parse certificates: Invalid ASN.1 structure");
   }
 
-  const certificates: Uint8Array[] = [];
+  const certificates: pkijs.Certificate[] = [];
   const contentValue = asn1Content.result.valueBlock.value;
 
   if (contentValue && contentValue[1] instanceof asn1js.Set) {
@@ -114,7 +116,8 @@ function extractCertificatesFromContent(eContent: Uint8Array): Uint8Array[] {
         item instanceof asn1js.Sequence
       )
       .forEach((sequence) => {
-        certificates.push(new Uint8Array(sequence.toBER(false)));
+        const cert = new pkijs.Certificate({ schema: sequence });
+        certificates.push(cert);
       });
   }
 
@@ -125,18 +128,16 @@ function extractCertificatesFromContent(eContent: Uint8Array): Uint8Array[] {
  * Removes duplicate certificates based on their fingerprints
  * @param certificates - Array of certificate data
  */
-function deduplicateCertificates(certificates: Uint8Array[]): Uint8Array[] {
-  const uniqueCerts = new Map<string, Uint8Array>();
 
-  certificates.forEach((cert) => {
+function deduplicateCertificates(
+  certificates: pkijs.Certificate[],
+): pkijs.Certificate[] {
+  const uniqueCerts = new Map<string, pkijs.Certificate>();
+
+  certificates.forEach((certificate) => {
     try {
-      const asn1 = asn1js.fromBER(cert.buffer);
-      if (asn1.offset === -1) return;
-
-      const certificate = new pkijs.Certificate({ schema: asn1.result });
       const fingerprint = encodeBase64(sha1(certificate.tbsView));
-      const derBytes = new Uint8Array(certificate.toSchema().toBER(false));
-      uniqueCerts.set(fingerprint, derBytes);
+      uniqueCerts.set(fingerprint, certificate);
     } catch (error) {
       console.warn("Skipping invalid certificate:", error.message);
     }
@@ -150,7 +151,8 @@ function deduplicateCertificates(certificates: Uint8Array[]): Uint8Array[] {
  * @param ldifPath - Path to LDIF file
  * @throws Error if file extension is invalid or file operations fail
  */
-export function certificatesFromLDIF(ldifPath: string): Uint8Array[] {
+
+export function certificatesFromLDIF(ldifPath: string): pkijs.Certificate[] {
   if (!ldifPath.endsWith(CONSTANTS.FILE_EXTENSION)) {
     throw new Error(
       `Invalid file type. Expected ${CONSTANTS.FILE_EXTENSION} file`,
@@ -171,6 +173,55 @@ export function certificatesFromLDIF(ldifPath: string): Uint8Array[] {
     throw new Error(`Failed to process LDIF file: ${error.message}`);
   }
 }
+
+/**
+ * Serializes an array of certificates into a single Uint8Array using ASN.1 encoding
+ * @param certificates - Array of certificates to serialize
+ * @returns Uint8Array containing the serialized certificates
+ */
+export function serializeCertificates(
+  certificates: pkijs.Certificate[],
+): Uint8Array {
+  // Create an ASN.1 SEQUENCE to hold all certificates
+  const certSequence = new asn1js.Sequence({
+    value: certificates.map((cert) => cert.toSchema()),
+  });
+
+  // Encode the sequence to DER format
+  return new Uint8Array(certSequence.toBER(false));
+}
+
+/**
+ * Deserializes a Uint8Array back into an array of certificates
+ * @param serializedData - Uint8Array containing serialized certificates
+ * @returns Array of Certificate objects
+ * @throws Error if deserialization fails
+ */
+export function deserializeCertificates(
+  serializedData: Uint8Array,
+): pkijs.Certificate[] {
+  try {
+    // Parse the ASN.1 structure
+    const asn1Data = asn1js.fromBER(serializedData.buffer);
+    if (asn1Data.offset === -1) {
+      throw new Error("Invalid ASN.1 structure");
+    }
+
+    // The root should be a SEQUENCE containing all certificates
+    const sequence = asn1Data.result;
+    if (!(sequence instanceof asn1js.Sequence)) {
+      throw new Error("Expected ASN.1 SEQUENCE");
+    }
+
+    // Convert each value in the sequence back to a Certificate object
+    return sequence.valueBlock.value.map((certSchema) =>
+      new pkijs.Certificate({ schema: certSchema })
+    );
+  } catch (error) {
+    throw new Error(`Failed to deserialize certificates: ${error.message}`);
+  }
+}
+
 if (import.meta.main) {
   try {
     if (Deno.args.length !== 1) {
@@ -182,6 +233,12 @@ if (import.meta.main) {
     const certificates = certificatesFromLDIF(inputFile);
     console.log(
       `Successfully extracted ${certificates.length} unique certificates`,
+    );
+
+    const outputFile = inputFile.replace(".ldif", ".der");
+    Deno.writeFileSync(outputFile, serializeCertificates(certificates));
+    console.log(
+      `Successfully have written ${outputFile}`,
     );
   } catch (error) {
     console.error("Error:", error.message);
