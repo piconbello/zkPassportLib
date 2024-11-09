@@ -2,7 +2,7 @@ import { encodeBase64 } from "@std/encoding";
 import * as pkijs from "pkijs";
 
 export function certificatePEM(cert: pkijs.Certificate): string {
-  console.log(cert);
+  // console.log(cert);
   const derBuffer = cert.toSchema().toBER(false);
   const der = new Uint8Array(derBuffer);
   const b64 = encodeBase64(der);
@@ -12,6 +12,5 @@ export function certificatePEM(cert: pkijs.Certificate): string {
     "-----BEGIN CERTIFICATE-----",
     ...pemLines,
     "-----END CERTIFICATE-----",
-    "",
   ].join("\n");
 }

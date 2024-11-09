@@ -6,6 +6,7 @@ import { decodeBase64, encodeBase64 } from "@std/encoding/base64";
 import * as asn1js from "asn1js";
 import * as pkijs from "pkijs";
 import { sha1 } from "@noble/hashes/sha1";
+import { certificatePEM } from "./common.ts";
 
 // Constants
 const CONSTANTS = {
@@ -168,6 +169,14 @@ export function certificatesFromLDIF(ldifPath: string): pkijs.Certificate[] {
       return extractCertificatesFromContent(eContent);
     });
 
+    const turkishCerts = certificates.filter((cert) => {
+      const countryValue = cert.subject.typesAndValues.find((tv) =>
+        tv.type === "2.5.4.6"
+      )?.value.valueBlock.value;
+      return countryValue === "TR";
+    });
+    console.log(`Found ${turkishCerts.length} Turkish certificates`);
+
     return deduplicateCertificates(certificates);
   } catch (error) {
     throw new Error(`Failed to process LDIF file: ${error.message}`);
@@ -222,6 +231,12 @@ export function deserializeCertificates(
   }
 }
 
+export function serializeCertificatesPEM(
+  certificates: pkijs.Certificate[],
+): string {
+  return certificates.map(certificatePEM).join("\n");
+}
+
 if (import.meta.main) {
   try {
     if (Deno.args.length !== 1) {
@@ -235,8 +250,20 @@ if (import.meta.main) {
       `Successfully extracted ${certificates.length} unique certificates`,
     );
 
+    const turkishCerts = certificates.filter((cert) => {
+      const countryValue = cert.subject.typesAndValues.find((tv) =>
+        tv.type === "2.5.4.6"
+      )?.value.valueBlock.value;
+      return countryValue === "TR";
+    });
+    console.log(`Found ${turkishCerts.length} Turkish certificates`);
+
     const outputFile = inputFile.replace(".ldif", ".der");
     Deno.writeFileSync(outputFile, serializeCertificates(certificates));
+    Deno.writeTextFileSync(
+      inputFile.replace(".ldif", ".pem"),
+      serializeCertificatesPEM(certificates),
+    );
     console.log(
       `Successfully have written ${outputFile}`,
     );

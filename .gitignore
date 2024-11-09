@@ -12,3 +12,4 @@ notes.md
 justfile
 **/*.ldif
 **/*.der
+**/*.pem
