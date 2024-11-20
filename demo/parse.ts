@@ -1,6 +1,5 @@
 import { decodeBase64, encodeHex } from "jsr:@std/encoding";
 
-// Common EC types
 export interface PublicKeyEC {
   type: "EC";
   curve: string;
@@ -15,7 +14,6 @@ export interface PublicKeyECb64 {
   y: string;
 }
 
-// Signature types
 export interface SignatureEC {
   r: bigint;
   s: bigint;
@@ -27,7 +25,6 @@ interface SignatureECb64 {
   s: string;
 }
 
-// RSA types
 export interface RSAPublicKey {
   type: "RSA";
   modulus: bigint;
@@ -40,8 +37,7 @@ interface RSAPublicKeyB64 {
   exponent: string;
 }
 
-// Bundle types
-interface BundleBase64 {
+export interface BundleBase64 {
   dg1: string;
   lds: string;
   signed_attrs: string;
@@ -67,7 +63,6 @@ export interface Bundle {
   cert_master_pubkey: PublicKeyEC;
 }
 
-// Master cert types
 interface MasterCertB64 {
   pubkey: RSAPublicKeyB64 | PublicKeyECb64;
   subject_key_id: string;
@@ -78,7 +73,6 @@ export interface MasterCert {
   subject_key_id: Uint8Array;
 }
 
-// Parser functions
 function parsePublicKeyEC(pk: PublicKeyECb64): PublicKeyEC {
   if (pk.type !== "EC") {
     throw new Error("not EC pk");
@@ -109,14 +103,13 @@ function parseRSAPublicKey(pk: RSAPublicKeyB64): RSAPublicKey {
   };
 }
 
-// The rest of the parsing functions remain the same
-function parseBundleB64(b: BundleBase64): Bundle {
-  if (
-    b.digest_algo !== "id-sha256" ||
-    b.cert_local_tbs_digest_algo !== "id-sha256"
-  ) {
-    throw new Error("not sha256");
-  }
+export function parseBundleB64(b: BundleBase64): Bundle {
+  // if (
+  //   b.digest_algo !== "id-sha256" ||
+  //   b.cert_local_tbs_digest_algo !== "id-sha256"
+  // ) {
+  //   throw new Error("not sha256");
+  // }
   return {
     dg1: decodeBase64(b.dg1),
     lds: decodeBase64(b.lds),

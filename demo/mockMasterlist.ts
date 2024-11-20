@@ -17,14 +17,13 @@ export function randomMasterlist(
   n: number,
   includeCert: MasterCert,
 ): [MasterCert[], number] {
-  const includeIndex = Math.floor(Math.random() * n);
-
   const masterlist: MasterCert[] = Array(n).fill(null).map(() => ({
     pubkey: randomPubkeyEC(),
     subject_key_id: crypto.getRandomValues(new Uint8Array(20)),
   }));
 
   // Override one random position with includeCert
+  const includeIndex = Math.floor(Math.random() * n);
   masterlist[includeIndex] = includeCert;
 
   return [masterlist, includeIndex];
