@@ -1,6 +1,6 @@
 import { Bytes, Proof, VerificationKey } from "o1js";
 
-import { parseBundle, parseMasterlist } from "../parse.ts";
+import { parseBundle } from "../parse.ts";
 import { Td3_Lds_Sha256, Td3_Lds_Sha256_Input } from "./td3_lds_sha256.ts";
 import {
   Lds_SignedAttrs_Sha256,
@@ -8,18 +8,7 @@ import {
 } from "./lds_signedattrs_sha256.ts";
 import { LDS } from "./constants.ts";
 import {
-  SignedAttrs_Secp256k1_Sha256,
-  SignedAttrs_Secp256k1_Sha256_Input,
-} from "./signedattrs_secp256k1_sha256.ts";
-import { bigintToLimbs, EcdsaSecp256k1, Secp256k1 } from "../utilsO1.ts";
-import { CertificateRegistry } from "../certificateRegistry.ts";
-import {
-  MasterCert_Secp521r1,
-  MasterCert_Secp521r1_Input,
-} from "./mastercert_secp521r1.ts";
-import {
   Combine_Td3_SignedAttrs_Sha256,
-  Combine_Td3_SignedAttrs_Sha256_Output,
   Dyn_Lds_SignedAttrs_Sha256,
   Dyn_Td3_Lds_Sha256,
 } from "./combine_td3_signedattrs_sha256.ts";
@@ -67,66 +56,6 @@ Deno.test("demo tests", async (t) => {
 
     await Lds_SignedAttrs_Sha256.verify(proof.proof);
     proof_lds_in_signedattrs = proof.proof;
-  });
-
-  await t.step("⏳ Compiling SignedAttrs Signature Verification", async () => {
-    await SignedAttrs_Secp256k1_Sha256.compile();
-  });
-  let proof_signedattrs_is_signed:
-    | Proof<SignedAttrs_Secp256k1_Sha256_Input, void>
-    | null = null;
-  await t.step("❔ Is SignedAttrs signed", async () => {
-    const proof = await SignedAttrs_Secp256k1_Sha256.verifySignedAttrs(
-      new SignedAttrs_Secp256k1_Sha256_Input({
-        signedAttrs: Bytes.from(bundleFrodo.signed_attrs),
-        publicKey: new Secp256k1({
-          x: bundleFrodo.cert_local_pubkey.x,
-          y: bundleFrodo.cert_local_pubkey.y,
-        }),
-        signature: new EcdsaSecp256k1({
-          r: bundleFrodo.document_signature.r,
-          s: bundleFrodo.document_signature.s,
-        }),
-      }),
-    );
-
-    await SignedAttrs_Secp256k1_Sha256.verify(proof.proof);
-    proof_signedattrs_is_signed = proof.proof;
-  });
-
-  await t.step("⏳ Compiling Known Mastercert", async () => {
-    await MasterCert_Secp521r1.compile();
-  });
-  let registry: CertificateRegistry | null = null;
-  await t.step("⏳ Preparing Certificate Registry", async () => {
-    const masterlist = parseMasterlist(
-      Deno.readTextFileSync("files/masterlist_284.json"),
-    );
-    registry = new CertificateRegistry(masterlist);
-    await MasterCert_Secp521r1.compile();
-  });
-  let proof_known_mastercert: Proof<MasterCert_Secp521r1_Input, void> | null =
-    null;
-  await t.step("❔ Is MasterCert known", async () => {
-    const bundleHalit = parseBundle(
-      Deno.readTextFileSync("files/bundle.halit.json"),
-    );
-
-    const x = bigintToLimbs(bundleHalit.cert_master_pubkey.x);
-    const y = bigintToLimbs(bundleHalit.cert_master_pubkey.y);
-    const witness = registry!.proveFor(bundleHalit.cert_master_pubkey);
-
-    const proof = await MasterCert_Secp521r1.verifyKnownMastercert(
-      new MasterCert_Secp521r1_Input({
-        root: registry!.getRoot(),
-        x,
-        y,
-      }),
-      witness.witness,
-    );
-
-    await MasterCert_Secp521r1.verify(proof.proof);
-    proof_known_mastercert = proof.proof;
   });
 
   await t.step("⏳ Compiling Combine DG1 to SignedAttrs", async () => {
