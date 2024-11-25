@@ -14,7 +14,7 @@ import {
 } from "./combine_td3_signedattrs_sha256.ts";
 import { assertEquals } from "@std/assert";
 
-Deno.test("demo tests", async (t) => {
+Deno.test("head tests", async (t) => {
   // we know that it is sha256 + secp256k1 all over.
   const bundleFrodo = parseBundle(
     Deno.readTextFileSync("files/bundle.frodo.json"),

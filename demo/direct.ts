@@ -2,8 +2,8 @@ import { assert, Bytes, Hash } from "npm:o1js";
 import { parseBundle, PublicKeyEC, SignatureEC } from "./parse.ts";
 import {
   assertSubarray,
+  bytes32ToScalar,
   EcdsaSecp256k1,
-  hashToScalar,
   Secp256k1,
 } from "./utilsO1.ts";
 import {
@@ -38,7 +38,7 @@ function assertSignedAttrsIsSignedByCert(
   signature: SignatureEC,
 ) {
   const digest = Hash.SHA2_256.hash(Bytes.from(signedAttrs));
-  const aff = hashToScalar(digest);
+  const aff = bytes32ToScalar(digest.bytes);
   const pubkeyObj = new Secp256k1(pubkey);
   const signatureObj = new EcdsaSecp256k1(signature);
   const isValid = signatureObj.verifySignedHash(aff, pubkeyObj);
@@ -51,7 +51,7 @@ function assertLocalIsSignedByMaster(
   signature: SignatureEC,
 ) {
   const digest = Hash.SHA2_256.hash(Bytes.from(cert_local_tbs));
-  const aff = hashToScalar(digest);
+  const aff = bytes32ToScalar(digest.bytes);
   const pubkeyObj = new Secp256k1(master_pubkey);
   const signatureObj = new EcdsaSecp256k1(signature);
   const isValid = signatureObj.verifySignedHash(aff, pubkeyObj);

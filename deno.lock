@@ -9,7 +9,7 @@
     "jsr:@std/internal@^1.0.4": "1.0.4",
     "jsr:@std/internal@^1.0.5": "1.0.5",
     "npm:@faker-js/faker@^9.1.0": "9.1.0",
-    "npm:@noble/curves@^1.6.0": "1.6.0",
+    "npm:@noble/curves@^1.7.0": "1.7.0",
     "npm:@noble/hashes@*": "1.5.0",
     "npm:@noble/hashes@^1.5.0": "1.5.0",
     "npm:asn1.js@^5.4.1": "5.4.1",
@@ -17,7 +17,9 @@
     "npm:asn1js@^3.0.5": "3.0.5",
     "npm:i18n-iso-countries@^7.12.0": "7.12.0",
     "npm:jsrsasign@^11.1.0": "11.1.0",
+    "npm:mina-credentials@~0.2.2": "0.2.2_o1js@2.0.0",
     "npm:mrz@^4.2.0": "4.2.0",
+    "npm:o1js@*": "2.0.0",
     "npm:o1js@2": "2.0.0",
     "npm:pkijs@*": "3.2.4",
     "npm:pkijs@^3.2.4": "3.2.4"
@@ -52,14 +54,17 @@
     "@faker-js/faker@9.1.0": {
       "integrity": "sha512-GJvX9iM9PBtKScJVlXQ0tWpihK3i0pha/XAhzQa1hPK/ILLa1Wq3I63Ij7lRtqTwmdTxRCyrUhLC5Sly9SLbug=="
     },
-    "@noble/curves@1.6.0": {
-      "integrity": "sha512-TlaHRXDehJuRNR9TfZDNQ45mMEd5dwUwmicsafcIX4SsNiqnCHKjE/1alYPd/lDRVhxdhUAlv8uEhMCI5zjIJQ==",
+    "@noble/curves@1.7.0": {
+      "integrity": "sha512-UTMhXK9SeDhFJVrHeUJ5uZlI6ajXg10O6Ddocf9S6GjbSBVZsJo88HzKwXznNfGpMTRDyJkqMjNDPYgf0qFWnw==",
       "dependencies": [
-        "@noble/hashes"
+        "@noble/hashes@1.6.0"
       ]
     },
     "@noble/hashes@1.5.0": {
       "integrity": "sha512-1j6kQFb7QRru7eKN3ZDvRcP13rugwdxZqCjbiAVZfIJwgj2A65UmT4TgARXGlXgnRkORLTDTrO19ZErt7+QXgA=="
+    },
+    "@noble/hashes@1.6.0": {
+      "integrity": "sha512-YUULf0Uk4/mAA89w+k3+yUYh6NrEvxZa5T6SY3wlMvE2chHkxFUUIDI8/XW1QSC357iA5pSnqt7XEhvFOqmDyQ=="
     },
     "asn1.js@5.4.1": {
       "integrity": "sha512-+I//4cYPccV8LdmBLiX8CYvf9Sp3vQsrqu2QNXRcrbiWvcx/UdlFiqUJJzxRQxgsZmvhXhn4cSKeSmoFjVdupA==",
@@ -115,6 +120,12 @@
     "jsrsasign@11.1.0": {
       "integrity": "sha512-Ov74K9GihaK9/9WncTe1mPmvrO7Py665TUfUKvraXBpu+xcTWitrtuOwcjf4KMU9maPaYn0OuaWy0HOzy/GBXg=="
     },
+    "mina-credentials@0.2.2_o1js@2.0.0": {
+      "integrity": "sha512-E31cJovtKJfkktnsRIDluU4t5va9UcLW0HS1s5MR7RcmvpovA63D+/7zFVebPCQISuMugmY2mIQmEZT6/zLChw==",
+      "dependencies": [
+        "o1js"
+      ]
+    },
     "minimalistic-assert@1.0.1": {
       "integrity": "sha512-UtJcAD4yEaGtjPezWuO9wC4nwUnVH/8/Im3yEHQP4b67cXlD/Qr9hdITCU1xDbSEXg2XKNaP8jsReV7vQd00/A=="
     },
@@ -141,7 +152,7 @@
     "pkijs@3.2.4": {
       "integrity": "sha512-Et9V5QpvBilPFgagJcaKBqXjKrrgF5JL2mSDELk1vvbOTt4fuBhSSsGn9Tcz0TQTfS5GCpXQ31Whrpqeqp0VRg==",
       "dependencies": [
-        "@noble/hashes",
+        "@noble/hashes@1.5.0",
         "asn1js",
         "bytestreamjs",
         "pvtsutils",
@@ -189,12 +200,13 @@
       "jsr:@std/assert@^1.0.7",
       "jsr:@std/encoding@^1.0.5",
       "npm:@faker-js/faker@^9.1.0",
-      "npm:@noble/curves@^1.6.0",
+      "npm:@noble/curves@^1.7.0",
       "npm:@noble/hashes@^1.5.0",
       "npm:asn1.js@^5.4.1",
       "npm:asn1js@^3.0.5",
       "npm:i18n-iso-countries@^7.12.0",
       "npm:jsrsasign@^11.1.0",
+      "npm:mina-credentials@~0.2.2",
       "npm:mrz@^4.2.0",
       "npm:o1js@2",
       "npm:pkijs@^3.2.4"

@@ -1,5 +1,5 @@
 import { Hash, Struct, ZkProgram } from "o1js";
-import { EcdsaSecp256k1, hashToScalar, Secp256k1 } from "../utilsO1.ts";
+import { bytes32ToScalar, EcdsaSecp256k1, Secp256k1 } from "../utilsO1.ts";
 import { SIGNED_ATTRS } from "./constants.ts";
 
 export class SignedAttrs_Secp256k1_Sha256_Input extends Struct({
@@ -19,7 +19,7 @@ export const SignedAttrs_Secp256k1_Sha256 = ZkProgram({
       // deno-lint-ignore require-await
       async method(inp: SignedAttrs_Secp256k1_Sha256_Input) {
         const hash = Hash.SHA2_256.hash(inp.signedAttrs);
-        const aff = hashToScalar(hash);
+        const aff = bytes32ToScalar(hash.bytes);
         const isValid = inp.signature.verifySignedHash(aff, inp.publicKey);
         isValid.assertTrue("signature validation failed");
       },

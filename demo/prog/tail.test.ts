@@ -13,7 +13,7 @@ import {
 } from "./mastercert_secp521r1.ts";
 import { assert } from "@std/assert";
 
-Deno.test("demo tests", async (t) => {
+Deno.test("tail tests", async (t) => {
   await t.step("⏳ Compiling SignedAttrs Signature Verification", async () => {
     await SignedAttrs_Secp256k1_Sha256.compile();
   });
