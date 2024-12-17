@@ -1,5 +1,5 @@
 import { Hash, Struct, ZkProgram } from "o1js";
-import { assertSubarray } from "../utilsO1.ts";
+import { assertSubarray } from "../../utilsO1.ts";
 import { DG1_TD3, DIGEST_SIZE, LDS, OFFSET_DG1_IN_LDS } from "./constants.ts";
 
 export class Td3_Lds_Sha256_Input extends Struct({

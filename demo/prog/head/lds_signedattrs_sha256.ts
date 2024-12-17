@@ -1,6 +1,6 @@
 import { Struct, ZkProgram } from "o1js";
-import { DynamicSHA256 } from "../../src/primitives/dynamic-sha256.ts";
-import { assertSubarray } from "../utilsO1.ts";
+import { DynamicSHA2 } from "mina-credentials/dynamic";
+import { assertSubarray } from "../../utilsO1.ts";
 import {
   DIGEST_SIZE,
   LDS,
@@ -23,7 +23,7 @@ export const Lds_SignedAttrs_Sha256 = ZkProgram({
 
       // deno-lint-ignore require-await
       async method(inp: Lds_SignedAttrs_Sha256_Input) {
-        const ldsDigest = DynamicSHA256.hash(inp.lds);
+        const ldsDigest = DynamicSHA2.hash(256, inp.lds);
         assertSubarray(
           inp.signedAttrs.bytes,
           ldsDigest.bytes,

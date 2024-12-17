@@ -1,6 +1,6 @@
 import { Bytes, Proof, VerificationKey } from "o1js";
 
-import { parseBundle } from "../parse.ts";
+import { parseBundle } from "../../parse.ts";
 import { Td3_Lds_Sha256, Td3_Lds_Sha256_Input } from "./td3_lds_sha256.ts";
 import {
   Lds_SignedAttrs_Sha256,
