@@ -1,4 +1,4 @@
-export { sha256Bigint, generateRsaParams, rsaSign, randomPrime, randomExponent };
+export { sha256Bigint, generateRsaParams, rsaSign, randomPrime };
 
 /**
  * Generates an RSA signature for the given message using the private key and modulus.
@@ -36,51 +36,16 @@ function generateRsaParams(bitSize: number) {
   const p = randomPrime(bitSize / 2);
   const q = randomPrime(bitSize / 2);
 
+  // Public exponent
+  const e = 65537n;
+
   // Euler's totient function
   const phiN = (p - 1n) * (q - 1n);
-  
-  // OK, There's an important point to clarify here.
-  // https://en.wikipedia.org/wiki/RSA_(cryptosystem)
-  // Choose an integer e such that 1 < e < λ(n) and gcd(e, λ(n)) = 1; that is, e and λ(n) are coprime
-  // if p-1 or q-1 happen to be divisible by chosen e, above gcd is not 1, therefore such e is forbidden.
-  // in such situation inverse function throws an error b != 1
-  // Thus, we just keep trying until we find a suitable e
 
-  const [e,d] = (() => {
-    let _e, _d;
-    while (true) {
-      // Public exponent
-      _e = randomExponent();
-      try {
-        // Private exponent
-        _d = inverse(_e, phiN);
-        break;
-      } catch (_err) {
-        continue;
-      }
-    }
-    return [_e,_d];
-  })();
+  // Private exponent
+  const d = inverse(e, phiN);
 
   return { n: p * q, e, d };
-}
-
-// random exponent
-const candidateExponents = [
-  65537n,
-  3n,
-  148241n,
-  221251n,
-  65533n,
-  197833n,
-  106921n,
-  226241n,
-  105631n,
-  169923n,
-]
-
-function randomExponent() {
-  return candidateExponents[Math.floor(Math.random() * candidateExponents.length)]
 }
 
 // random primes

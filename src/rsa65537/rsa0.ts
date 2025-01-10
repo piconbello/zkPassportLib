@@ -10,6 +10,7 @@ export { Bigint2048, rsaVerify65537 };
 const mask = (1n << 116n) - 1n;
 
 /**
+
  * We use 116-bit limbs, which means 18 limbs for 2048-bit numbers as used in RSA.
  */
 const Field18 = Provable.Array(Field, 18);

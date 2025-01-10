@@ -130,6 +130,7 @@ function rsaVerify65537(
   modulus: Bigint2048
 ) {
   // compute signature^(2^16 + 1) mod modulus
+
   // square 16 times
   let x = signature;
   for (let i = 0; i < 16; i++) {
@@ -141,22 +142,41 @@ function rsaVerify65537(
   // check that x == message
   Provable.assertEqual(Bigint2048, message, x);
 }
-
+const rc57 = Field.from(1n<<57n);
+const rc121 = Field.from(1n<<121n);
 /**
  * Custom range check for a single limb, x in [0, 2^121)
  */
-function rangeCheck121(x: Field) {
-  let [x0, x1] = Provable.witnessFields(2, () => [
-    x.toBigInt() & ((1n << 64n) - 1n),
-    x.toBigInt() >> 64n,
-  ]);
+// function rangeCheck121(x: Field) { // Total Rows: 26989
+//   let [x0, x1] = Provable.witnessFields(2, () => [
+//     x.toBigInt() & ((1n << 64n) - 1n),
+//     x.toBigInt() >> 64n,
+//   ]);
 
-  Gadgets.rangeCheck64(x0);
-  let [x57] = Gadgets.rangeCheck64(x1);
-  x57.assertEquals(0n); // => x1 is 57 bits
-  // 64 + 57 = 116
-  x0.add(x1.mul(1n << 64n)).assertEquals(x);
+//   Gadgets.rangeCheck64(x0);
+//   x1.lessThan(rc57);
+//   x0.add(x1.mul(1n << 64n)).assertEquals(x);
+// }
+function rangeCheck121(x: Field) { // Total Rows: 26045
+  x.lessThan(rc121);
 }
+// function rangeCheck121(x: Field) { // Total Rows: 85485
+//   x.toBits(121);
+// }
+
+// function rangeCheck121(x: Field) {
+//   let [x0, x1] = Provable.witnessFields(2, () => [
+//     x.toBigInt() & ((1n << 64n) - 1n),
+//     x.toBigInt() >> 64n,
+//   ]);
+
+//   Gadgets.rangeCheck64(x0);
+//   let [x57] = Gadgets.rangeCheck64(x1);
+//   // OK IT DOES NOT RETURN X57 BUT X52 HARDCODED, IT IS A SPECIAL GATE!
+//   x57.assertEquals(0n); // => x1 is 57 bits
+//   // 64 + 57 = 116
+//   x0.add(x1.mul(1n << 64n)).assertEquals(x);
+// }
 
 /**
  * Custom range check for carries, x in [-2^127, 2^127)
