@@ -7,13 +7,13 @@ let rsaZkProgram = ZkProgram({
 
   methods: {
     verifyRsa: {
-      privateInputs: [Bigint4096, Bigint4096, Bigint4096, UInt32],
+      privateInputs: [Bigint4096, Bigint4096, Bigint4096, Field],
 
       async method(
         message: Bigint4096,
         signature: Bigint4096,
         modulus: Bigint4096,
-        publicExponent: UInt32,
+        publicExponent: Field,
       ) {
         rsaVerify(message, signature, modulus, publicExponent);
       },
@@ -36,7 +36,7 @@ const params = generateRsaParams(4096);
 const message = Bigint4096.from(input);
 const signature = Bigint4096.from(rsaSign(input, params.d, params.n));
 const modulus = Bigint4096.from(params.n);
-const exponent = UInt32.from(params.e);
+const exponent = Field.from(params.e);
 console.timeEnd('generate RSA parameters and inputs (2048 bits)');
 
 console.time('prove');

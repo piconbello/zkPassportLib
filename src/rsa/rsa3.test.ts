@@ -15,7 +15,7 @@ describe("RSA1 RSA65537 verification tests", () => {
     const message = Bigint4096.from(4n);
     const rsaSig = Bigint4096.from(31n);
     const modul = Bigint4096.from(33n);
-    const exponent = UInt32.from(65537n);
+    const exponent = Field.from(65537n);
 
     rsaVerify(message, rsaSig, modul, exponent);
   });
@@ -37,7 +37,7 @@ describe("RSA1 RSA65537 verification tests", () => {
     const message = Bigint4096.from(13n);
     const rsaSig = Bigint4096.from(rsaSign(13n, params.d, params.n));
     const modul = Bigint4096.from(params.n);
-    const exponent = UInt32.from(params.e);
+    const exponent = Field.from(params.e);
 
     rsaVerify(message, rsaSig, modul, exponent);
   });
@@ -51,7 +51,7 @@ describe("RSA1 RSA65537 verification tests", () => {
       const message = Bigint4096.from(input);
       const signature = Bigint4096.from(rsaSign(input, params.d, params.n));
       const modulus = Bigint4096.from(params.n);
-      const exponent = UInt32.from(params.e);
+      const exponent = Field.from(params.e);
 
       rsaVerify(message, signature, modulus, exponent);
     }
@@ -66,7 +66,7 @@ describe("RSA1 RSA65537 verification tests", () => {
       const message = Bigint4096.from(input);
       const signature = Bigint4096.from(rsaSign(input, params.d, params.n));
       const modulus = Bigint4096.from(params.n); // domain public key
-      const exponent = UInt32.from(params.e);
+      const exponent = Field.from(params.e);
 
       rsaVerify(message, signature, modulus, exponent);
     }
@@ -81,7 +81,7 @@ describe("RSA1 RSA65537 verification tests", () => {
       const message = Bigint4096.from(input);
       const signature = Bigint4096.from(rsaSign(input, params.d, params.n));
       const modulus = Bigint4096.from(params.n); // domain public key
-      const exponent = UInt32.from(params.e);
+      const exponent = Field.from(params.e);
 
       rsaVerify(message, signature, modulus, exponent);
     }
@@ -96,7 +96,7 @@ describe("RSA1 RSA65537 verification tests", () => {
       const message = Bigint4096.from(input);
       const signature = Bigint4096.from(rsaSign(input, params.d, params.n));
       const modulus = Bigint4096.from(params.n); // domain public key
-      const exponent = UInt32.from(params.e);
+      const exponent = Field.from(params.e);
 
       rsaVerify(message, signature, modulus, exponent);
     }
@@ -111,7 +111,7 @@ describe("RSA1 RSA65537 verification tests", () => {
       const message = Bigint4096.from(input);
       const signature = Bigint4096.from(rsaSign(input, params.d, params.n));
       const modulus = Bigint4096.from(params.n);
-      const exponent = UInt32.from(params.e);
+      const exponent = Field.from(params.e);
 
       rsaVerify(message, signature, modulus, exponent);
     }
@@ -124,7 +124,7 @@ describe("RSA1 RSA65537 verification tests", () => {
     const message = Bigint4096.from(input);
     const signature = Bigint4096.from(rsaSign(input, params.d, params.n));
     const modulus = Bigint4096.from(params.n);
-    const exponent = UInt32.from(params.e);
+    const exponent = Field.from(params.e);
 
     expect(() => rsaVerify(message, signature, modulus, exponent)).toThrow();
   });
@@ -136,7 +136,7 @@ describe("RSA1 RSA65537 verification tests", () => {
     const message = Bigint4096.from(input);
     const signature = Bigint4096.from(rsaSign(input, params.d, params.n));
     const modulus = Bigint4096.from(randomPrime(4096)); // Tamper with modulus
-    const exponent = UInt32.from(params.e);
+    const exponent = Field.from(params.e);
 
     expect(() => rsaVerify(message, signature, modulus, exponent)).toThrow();
   });
@@ -148,7 +148,7 @@ describe("RSA1 RSA65537 verification tests", () => {
     const message = Bigint4096.from(35n); // Tamper with input
     const signature = Bigint4096.from(rsaSign(input, params.d, params.n));
     const modulus = Bigint4096.from(params.n);
-    const exponent = UInt32.from(params.e);
+    const exponent = Field.from(params.e);
 
     expect(() => rsaVerify(message, signature, modulus, exponent)).toThrow();
   });
@@ -160,7 +160,7 @@ describe("RSA1 RSA65537 verification tests", () => {
     const message = Bigint4096.from(input);
     const signature = Bigint4096.from(rsaSign(input, params.d, params.n));
     const modulus = Bigint4096.from(params.n);
-    const exponent = UInt32.from(randomExponent()); // Tamper with exponent
+    const exponent = Field.from(randomExponent()); // Tamper with exponent
 
     expect(() => rsaVerify(message, signature, modulus, exponent)).toThrow();
   });
@@ -172,7 +172,7 @@ describe("RSA1 RSA65537 verification tests", () => {
     const message = Bigint4096.from(input);
     const signature = Bigint4096.from(rsaSign(input, params.e, params.n)); // Tamper with private key
     const modulus = Bigint4096.from(params.n);
-    const exponent = UInt32.from(params.e);
+    const exponent = Field.from(params.e);
 
     expect(() => rsaVerify(message, signature, modulus, exponent)).toThrow();
   });
@@ -184,7 +184,7 @@ describe("RSA1 RSA65537 verification tests", () => {
     const message = Bigint4096.from(input);
     const signature = Bigint4096.from(rsaSign(input, params.d, 1223n)); // Tamper with signature modulus
     const modulus = Bigint4096.from(params.n);
-    const exponent = UInt32.from(params.e);
+    const exponent = Field.from(params.e);
 
     expect(() => rsaVerify(message, signature, modulus, exponent)).toThrow();
   });

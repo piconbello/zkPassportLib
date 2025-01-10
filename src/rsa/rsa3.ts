@@ -5,14 +5,16 @@
  */
 import { Field, Gadgets, Provable, Struct, Unconstrained, UInt32 } from 'o1js';
 
-export { Bigint4096, rsaVerify };
+export { Bigint4096, rsaVerify, EXP_BIT_COUNT };
 
 const mask = (1n << 116n) - 1n;
+
+const EXP_BIT_COUNT = 20;
 
 /**
  * We use 116-bit limbs, which means 36 limbs for 4096-bit numbers as used in RSA.
  */
-const Field36 = Provable.Array(Field, 36);
+export const Field36 = Provable.Array(Field, 36);
 
 class Bigint4096 extends Struct({
   fields: Field36,
@@ -127,58 +129,23 @@ function multiply(
 // using toBits(20) => totalRows: 104011
 
 
-// Using UInt32
+// Using Field
 // totalRows: 170244
 
-const masks = [
-  UInt32.from(1n<<0n),
-  UInt32.from(1n<<1n),
-  UInt32.from(1n<<2n),
-  UInt32.from(1n<<3n),
-  UInt32.from(1n<<4n),
-  UInt32.from(1n<<5n),
-  UInt32.from(1n<<6n),
-  UInt32.from(1n<<7n),
-  UInt32.from(1n<<8n),
-  UInt32.from(1n<<9n),
-  UInt32.from(1n<<10n),
-  UInt32.from(1n<<11n),
-  UInt32.from(1n<<12n),
-  UInt32.from(1n<<13n),
-  UInt32.from(1n<<14n),
-  UInt32.from(1n<<15n),
-  UInt32.from(1n<<16n),
-  UInt32.from(1n<<17n),
-  UInt32.from(1n<<18n),
-  UInt32.from(1n<<19n),
-  UInt32.from(1n<<20n),
-  UInt32.from(1n<<21n),
-  UInt32.from(1n<<22n),
-  UInt32.from(1n<<23n),
-  UInt32.from(1n<<24n),
-  UInt32.from(1n<<25n),
-  UInt32.from(1n<<26n),
-  UInt32.from(1n<<27n),
-  UInt32.from(1n<<28n),
-  UInt32.from(1n<<29n),
-  UInt32.from(1n<<30n),
-  UInt32.from(1n<<31n)
-]
-
-const zero = UInt32.from(0n);
+const zero = Field.from(0n);
 
 function rsaVerify(
   message: Bigint4096,
   signature: Bigint4096,
   modulus: Bigint4096,
-  publicExponent: UInt32
+  publicExponent: Field
 ) {
   const one = Bigint4096.from(1n);
-  UInt32.check(publicExponent);
-  let x = Provable.if(publicExponent.and(masks[31]).equals(zero), one, signature);
-  for (let i = 30; i >= 0; i--) {
+  const bits = publicExponent.toBits(EXP_BIT_COUNT);
+  let x = Provable.if(bits[EXP_BIT_COUNT-1], signature, one);
+  for (let i = EXP_BIT_COUNT-2; i >= 0; i--) {
     x = modulus.modSquare(x);
-    x = modulus.modMul(x, Provable.if(publicExponent.and(masks[i]).equals(zero), one, signature));
+    x = modulus.modMul(x, Provable.if(bits[i], signature, one));
   }
   Provable.assertEqual(Bigint4096, message, x);
 }
