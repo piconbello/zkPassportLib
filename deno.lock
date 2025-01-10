@@ -1,53 +1,93 @@
 {
   "version": "4",
   "specifiers": {
-    "jsr:@std/assert@^1.0.7": "1.0.8",
-    "jsr:@std/encoding@*": "1.0.5",
-    "jsr:@std/encoding@^1.0.5": "1.0.5",
+    "jsr:@std/assert@*": "1.0.10",
+    "jsr:@std/assert@^1.0.10": "1.0.10",
+    "jsr:@std/assert@^1.0.7": "1.0.10",
+    "jsr:@std/async@^1.0.9": "1.0.9",
+    "jsr:@std/data-structures@^1.0.5": "1.0.5",
+    "jsr:@std/encoding@*": "1.0.6",
+    "jsr:@std/encoding@^1.0.5": "1.0.6",
+    "jsr:@std/expect@*": "1.0.10",
+    "jsr:@std/expect@^1.0.10": "1.0.10",
+    "jsr:@std/fs@^1.0.8": "1.0.8",
     "jsr:@std/internal@^1.0.5": "1.0.5",
-    "npm:@faker-js/faker@^9.1.0": "9.2.0",
-    "npm:@noble/curves@^1.7.0": "1.7.0",
-    "npm:@noble/hashes@^1.5.0": "1.6.1",
+    "jsr:@std/path@^1.0.8": "1.0.8",
+    "jsr:@std/testing@*": "1.0.8",
+    "jsr:@std/testing@^1.0.8": "1.0.8",
+    "npm:@faker-js/faker@^9.1.0": "9.3.0",
+    "npm:@noble/curves@^1.7.0": "1.8.0",
+    "npm:@noble/hashes@^1.5.0": "1.7.0",
     "npm:asn1.js@^5.4.1": "5.4.1",
+    "npm:asn1js@*": "3.0.5",
     "npm:asn1js@^3.0.5": "3.0.5",
     "npm:i18n-iso-countries@^7.12.0": "7.13.0",
     "npm:jsrsasign@^11.1.0": "11.1.0",
-    "npm:mina-credentials@*": "0.2.2_o1js@2.1.0",
-    "npm:mina-credentials@~0.2.2": "0.2.2_o1js@2.1.0",
+    "npm:mina-credentials@~0.2.2": "0.2.7_o1js@2.2.0",
     "npm:mrz@^4.2.0": "4.2.1",
-    "npm:o1js@*": "2.1.0",
-    "npm:o1js@2": "2.1.0",
+    "npm:o1js@*": "2.2.0",
+    "npm:o1js@2": "2.2.0",
     "npm:pkijs@^3.2.4": "3.2.4"
   },
   "jsr": {
-    "@std/assert@1.0.8": {
-      "integrity": "ebe0bd7eb488ee39686f77003992f389a06c3da1bbd8022184804852b2fa641b",
+    "@std/assert@1.0.10": {
+      "integrity": "59b5cbac5bd55459a19045d95cc7c2ff787b4f8527c0dd195078ff6f9481fbb3",
       "dependencies": [
         "jsr:@std/internal"
       ]
     },
-    "@std/encoding@1.0.5": {
-      "integrity": "ecf363d4fc25bd85bd915ff6733a7e79b67e0e7806334af15f4645c569fefc04"
+    "@std/async@1.0.9": {
+      "integrity": "c6472fd0623b3f3daae023cdf7ca5535e1b721dfbf376562c0c12b3fb4867f91"
+    },
+    "@std/data-structures@1.0.5": {
+      "integrity": "86dd5c2d6365a6ad56e9103b3a877c5d5ade238c68ae463acfe0eb0e56d40783"
+    },
+    "@std/encoding@1.0.6": {
+      "integrity": "ca87122c196e8831737d9547acf001766618e78cd8c33920776c7f5885546069"
+    },
+    "@std/expect@1.0.10": {
+      "integrity": "7659b640447887cd1735f866962e10e434f12443b13595b149970c806e6f08db",
+      "dependencies": [
+        "jsr:@std/assert@^1.0.10",
+        "jsr:@std/internal"
+      ]
+    },
+    "@std/fs@1.0.8": {
+      "integrity": "161c721b6f9400b8100a851b6f4061431c538b204bb76c501d02c508995cffe0",
+      "dependencies": [
+        "jsr:@std/path"
+      ]
     },
     "@std/internal@1.0.5": {
       "integrity": "54a546004f769c1ac9e025abd15a76b6671ddc9687e2313b67376125650dc7ba"
+    },
+    "@std/path@1.0.8": {
+      "integrity": "548fa456bb6a04d3c1a1e7477986b6cffbce95102d0bb447c67c4ee70e0364be"
+    },
+    "@std/testing@1.0.8": {
+      "integrity": "ceef535808fb7568e91b0f8263599bd29b1c5603ffb0377227f00a8ca9fe42a2",
+      "dependencies": [
+        "jsr:@std/assert@^1.0.10",
+        "jsr:@std/async",
+        "jsr:@std/data-structures",
+        "jsr:@std/fs",
+        "jsr:@std/internal",
+        "jsr:@std/path"
+      ]
     }
   },
   "npm": {
-    "@faker-js/faker@9.2.0": {
-      "integrity": "sha512-ulqQu4KMr1/sTFIYvqSdegHT8NIkt66tFAkugGnHA+1WAfEn6hMzNR+svjXGFRVLnapxvej67Z/LwchFrnLBUg=="
+    "@faker-js/faker@9.3.0": {
+      "integrity": "sha512-r0tJ3ZOkMd9xsu3VRfqlFR6cz0V/jFYRswAIpC+m/DIfAUXq7g8N7wTAlhSANySXYGKzGryfDXwtwsY8TxEIDw=="
     },
-    "@noble/curves@1.7.0": {
-      "integrity": "sha512-UTMhXK9SeDhFJVrHeUJ5uZlI6ajXg10O6Ddocf9S6GjbSBVZsJo88HzKwXznNfGpMTRDyJkqMjNDPYgf0qFWnw==",
+    "@noble/curves@1.8.0": {
+      "integrity": "sha512-j84kjAbzEnQHaSIhRPUmB3/eVXu2k3dKPl2LOrR8fSOIL+89U+7lV117EWHtq/GHM3ReGHM46iRBdZfpc4HRUQ==",
       "dependencies": [
-        "@noble/hashes@1.6.0"
+        "@noble/hashes"
       ]
     },
-    "@noble/hashes@1.6.0": {
-      "integrity": "sha512-YUULf0Uk4/mAA89w+k3+yUYh6NrEvxZa5T6SY3wlMvE2chHkxFUUIDI8/XW1QSC357iA5pSnqt7XEhvFOqmDyQ=="
-    },
-    "@noble/hashes@1.6.1": {
-      "integrity": "sha512-pq5D8h10hHBjyqX+cfBm0i8JUXJ0UhczFc4r74zbuT9XgewFo2E3J1cOaGtdZynILNmQ685YWGzGE1Zv6io50w=="
+    "@noble/hashes@1.7.0": {
+      "integrity": "sha512-HXydb0DgzTpDPwbVeDGCG1gIu7X6+AuU6Zl6av/E/KG8LMsvPntvq+w17CHRpKBmN6Ybdrt1eP3k4cj8DJa78w=="
     },
     "asn1.js@5.4.1": {
       "integrity": "sha512-+I//4cYPccV8LdmBLiX8CYvf9Sp3vQsrqu2QNXRcrbiWvcx/UdlFiqUJJzxRQxgsZmvhXhn4cSKeSmoFjVdupA==",
@@ -103,8 +143,8 @@
     "jsrsasign@11.1.0": {
       "integrity": "sha512-Ov74K9GihaK9/9WncTe1mPmvrO7Py665TUfUKvraXBpu+xcTWitrtuOwcjf4KMU9maPaYn0OuaWy0HOzy/GBXg=="
     },
-    "mina-credentials@0.2.2_o1js@2.1.0": {
-      "integrity": "sha512-E31cJovtKJfkktnsRIDluU4t5va9UcLW0HS1s5MR7RcmvpovA63D+/7zFVebPCQISuMugmY2mIQmEZT6/zLChw==",
+    "mina-credentials@0.2.7_o1js@2.2.0": {
+      "integrity": "sha512-iFAE/O01xJ/AeAFdR3AK2Oe2HoaFfKVGcLBqaiQDyzLnmcjbMPT1swe/eGQ0+dn7g7o70eAQw4EqAOgGFX9p/w==",
       "dependencies": [
         "o1js"
       ]
@@ -121,8 +161,8 @@
         "whatwg-url"
       ]
     },
-    "o1js@2.1.0": {
-      "integrity": "sha512-d3S4ouWHlzne86gVCiMWp+jELqsNdIAzSCzV5QLqK2hyhTclHXDENivzlP/RZ44EEns/CaI7LHuwbovCPMhaCw==",
+    "o1js@2.2.0": {
+      "integrity": "sha512-lR8vmBlvzz3h+tDUajZfC/zVM+yKyrJFoIa57nED7F8WRfCGZHHy5lUpaUgHwVsC3ZE+aRaFtj2B2IzYyJu1AQ==",
       "dependencies": [
         "blakejs",
         "cachedir",
@@ -135,7 +175,7 @@
     "pkijs@3.2.4": {
       "integrity": "sha512-Et9V5QpvBilPFgagJcaKBqXjKrrgF5JL2mSDELk1vvbOTt4fuBhSSsGn9Tcz0TQTfS5GCpXQ31Whrpqeqp0VRg==",
       "dependencies": [
-        "@noble/hashes@1.6.1",
+        "@noble/hashes",
         "asn1js",
         "bytestreamjs",
         "pvtsutils",
@@ -182,6 +222,8 @@
     "dependencies": [
       "jsr:@std/assert@^1.0.7",
       "jsr:@std/encoding@^1.0.5",
+      "jsr:@std/expect@^1.0.10",
+      "jsr:@std/testing@^1.0.8",
       "npm:@faker-js/faker@^9.1.0",
       "npm:@noble/curves@^1.7.0",
       "npm:@noble/hashes@^1.5.0",
