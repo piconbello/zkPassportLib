@@ -1,5 +1,5 @@
 import { ZkProgram } from 'o1js';
-import { Bigint4096, rsaVerify65537 } from './rsa2.ts';
+import { Bigint6144, rsaVerify65537 } from './rsa5.ts';
 import { sha256Bigint, generateRsaParams, rsaSign } from './utils.ts';
 
 let rsaZkProgram = ZkProgram({
@@ -7,12 +7,12 @@ let rsaZkProgram = ZkProgram({
 
   methods: {
     verifyRsa65537: {
-      privateInputs: [Bigint4096, Bigint4096, Bigint4096],
+      privateInputs: [Bigint6144, Bigint6144, Bigint6144],
 
       async method(
-        message: Bigint4096,
-        signature: Bigint4096,
-        modulus: Bigint4096
+        message: Bigint6144,
+        signature: Bigint6144,
+        modulus: Bigint6144
       ) {
         rsaVerify65537(message, signature, modulus);
       },
@@ -29,13 +29,13 @@ const forceRecompileEnabled = false;
 await rsaZkProgram.compile({ forceRecompile: forceRecompileEnabled });
 console.timeEnd('compile');
 
-console.time('generate RSA parameters and inputs (4096 bits)');
+console.time('generate RSA parameters and inputs (6144 bits)');
 const input = await sha256Bigint('How are you!');
-const params = generateRsaParams(4096);
-const message = Bigint4096.from(input);
-const signature = Bigint4096.from(rsaSign(input, params.d, params.n));
-const modulus = Bigint4096.from(params.n);
-console.timeEnd('generate RSA parameters and inputs (4096 bits)');
+const params = generateRsaParams(6144);
+const message = Bigint6144.from(input);
+const signature = Bigint6144.from(rsaSign(input, params.d, params.n));
+const modulus = Bigint6144.from(params.n);
+console.timeEnd('generate RSA parameters and inputs (6144 bits)');
 
 console.time('prove');
 let { proof } = await rsaZkProgram.verifyRsa65537(message, signature, modulus);

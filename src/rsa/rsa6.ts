@@ -1,37 +1,37 @@
-// Modified rsa1 to 36 limbs/4096bits
+// Modified rsa1 to 53 limbs/6144bits
 
 /**
  * RSA signature verification with o1js
  */
-import { Field, Gadgets, Provable, Struct, Unconstrained, UInt32 } from 'o1js';
+import { Field, Gadgets, Provable, Struct, Unconstrained } from 'o1js';
 
-export { Bigint4096, rsaVerify, EXP_BIT_COUNT };
+export { Bigint6144, rsaVerify, EXP_BIT_COUNT };
 
 const mask = (1n << 116n) - 1n;
 
 const EXP_BIT_COUNT = 20;
 
 /**
- * We use 116-bit limbs, which means 36 limbs for 4096-bit numbers as used in RSA.
+ * We use 116-bit limbs, which means 53 limbs for 6144-bit numbers as used in RSA.
  */
-export const Field36 = Provable.Array(Field, 36);
+const Field53 = Provable.Array(Field, 53);
 
-class Bigint4096 extends Struct({
-  fields: Field36,
+class Bigint6144 extends Struct({
+  fields: Field53,
   value: Unconstrained.withEmpty(0n),
 }) {
-  modMul(x: Bigint4096, y: Bigint4096) {
+  modMul(x: Bigint6144, y: Bigint6144) {
     return multiply(x, y, this);
   }
 
-  modSquare(x: Bigint4096) {
+  modSquare(x: Bigint6144) {
     return multiply(x, x, this, { isSquare: true });
   }
 
   toBigint() {
     return this.value.get();
   }
-
+  
   toFields() {
     return this.fields;
   }
@@ -39,15 +39,15 @@ class Bigint4096 extends Struct({
   static from(x: bigint) {
     let fields = [];
     let value = x;
-    for (let i = 0; i < 36; i++) {
+    for (let i = 0; i < 53; i++) {
       fields.push(Field(x & mask));
       x >>= 116n;
     }
-    return new Bigint4096({ fields, value: Unconstrained.from(value) });
+    return new Bigint6144({ fields, value: Unconstrained.from(value) });
   }
 
   static override check(x: { fields: Field[] }) {
-    for (let i = 0; i < 36; i++) {
+    for (let i = 0; i < 53; i++) {
       rangeCheck116(x.fields[i]);
     }
   }
@@ -57,9 +57,9 @@ class Bigint4096 extends Struct({
  * x*y mod p
  */
 function multiply(
-  x: Bigint4096,
-  y: Bigint4096,
-  p: Bigint4096,
+  x: Bigint6144,
+  y: Bigint6144,
+  p: Bigint6144,
   { isSquare = false } = {}
 ) {
   if (isSquare) y = x;
@@ -68,23 +68,23 @@ function multiply(
   // this also adds the range checks in `check()`
   let { q, r } = Provable.witness(
     // TODO Struct() should be unnecessary
-    Struct({ q: Bigint4096, r: Bigint4096 }),
+    Struct({ q: Bigint6144, r: Bigint6144 }),
     () => {
       let xy = x.toBigint() * y.toBigint();
       let p0 = p.toBigint();
       let q = xy / p0;
       let r = xy - q * p0;
-      return { q: Bigint4096.from(q), r: Bigint4096.from(r) };
+      return { q: Bigint6144.from(q), r: Bigint6144.from(r) };
     }
   );
 
   // compute delta = xy - qp - r
   // we can use a sum of native field products for each limb, because
-  // input limbs are range-checked to 116 bits, and 2*116 + log(2*36-1) = 232 + 6 fits the native field.
-  let delta: Field[] = Array.from({ length: 2 * 36 - 1 }, () => Field(0));
+  // input limbs are range-checked to 116 bits, and 2*116 + log(2*53-1) = 232 + 6 fits the native field.
+  let delta: Field[] = Array.from({ length: 2 * 53 - 1 }, () => Field(0));
   let [X, Y, Q, R, P] = [x.fields, y.fields, q.fields, r.fields, p.fields];
 
-  for (let i = 0; i < 36; i++) {
+  for (let i = 0; i < 53; i++) {
     // when squaring, we can save constraints by not computing xi * xj twice
     if (isSquare) {
       for (let j = 0; j < i; j++) {
@@ -92,12 +92,12 @@ function multiply(
       }
       delta[2 * i] = delta[2 * i].add(X[i].mul(X[i]));
     } else {
-      for (let j = 0; j < 36; j++) {
+      for (let j = 0; j < 53; j++) {
         delta[i + j] = delta[i + j].add(X[i].mul(Y[j]));
       }
     }
 
-    for (let j = 0; j < 36; j++) {
+    for (let j = 0; j < 53; j++) {
       delta[i + j] = delta[i + j].sub(Q[i].mul(P[j]));
     }
 
@@ -107,7 +107,7 @@ function multiply(
   // perform carrying on the difference to show that it is zero
   let carry = Field(0);
 
-  for (let i = 0; i < 2 * 36 - 2; i++) {
+  for (let i = 0; i < 2 * 53 - 2; i++) {
     let deltaPlusCarry = delta[i].add(carry).seal();
 
     carry = Provable.witness(Field, () => deltaPlusCarry.div(1n << 116n));
@@ -119,35 +119,31 @@ function multiply(
   }
 
   // last carry is 0 ==> all of diff is 0 ==> x*y = q*p + r as integers
-  delta[2 * 36 - 2].add(carry).assertEquals(0n);
+  delta[2 * 53 - 2].add(carry).assertEquals(0n);
 
   return r;
 }
 
-// Using Field
-// using toBits(24) => totalRows: 125847
-// using toBits(20) => totalRows: 104011
-
-
-// Using UInt32
-// totalRows: 170244
-
-const zero = Field.from(0n);
-
+/**
+ * RSA signature verification
+ *
+ * TODO this is a bit simplistic; according to RSA spec, message must be 256 bits
+ * and the remaining bits must follow a specific pattern.
+ */
 function rsaVerify(
-  message: Bigint4096,
-  signature: Bigint4096,
-  modulus: Bigint4096,
+  message: Bigint6144,
+  signature: Bigint6144,
+  modulus: Bigint6144,
   publicExponent: Field
 ) {
-  const one = Bigint4096.from(1n);
+  const one = Bigint6144.from(1n);
   const bits = publicExponent.toBits(EXP_BIT_COUNT);
   let x = Provable.if(bits[EXP_BIT_COUNT-1], signature, one);
   for (let i = EXP_BIT_COUNT-2; i >= 0; i--) {
     x = modulus.modSquare(x);
     x = modulus.modMul(x, Provable.if(bits[i], signature, one));
   }
-  Provable.assertEqual(Bigint4096, message, x);
+  Provable.assertEqual(Bigint6144, message, x);
 }
 
 /**
