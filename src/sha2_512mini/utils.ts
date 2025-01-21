@@ -1,4 +1,4 @@
-export { sha512Bigint, DG1BytesFromBase64, sampleDG1BigInt, sampleDG1HashBigInt, makeChunkFromDG1Bytes }
+export { sha512Bigint, DG1BytesFromBase64, sampleDG1ChunkBigInt, sampleDG1Bytes, sampleDG1HashBigInt, makeChunkFromDG1Bytes }
 
 function bytesToBigintBE(bytes: Uint8Array | number[]) {
   let x = 0n;
@@ -43,7 +43,8 @@ function DG1BytesFromBase64(base64: string) {
 }
 
 const sampleDG1Base64 = "YVtfH1hQPEdCUkJBR0dJTlM8PEZST0RPPDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PFAyMzE0NTg5MDFHQlI2NzA5MjI0TTIyMDkxNTFaRTE4NDIyNkI8PDw8PDE4";
-const sampleDG1BigInt = makeChunkFromDG1Bytes(DG1BytesFromBase64(sampleDG1Base64));
+const sampleDG1Bytes = DG1BytesFromBase64(sampleDG1Base64);
+const sampleDG1ChunkBigInt = makeChunkFromDG1Bytes(sampleDG1Bytes);
 const sampleDG1HashBigInt = 0xabf209f54b9d59a77e5ca72ff450cd3d73189255bbb2f4671e7cc10d82deb10ffc922f9dc213d63eaa4ec266b2e2745e22692a8e3282ebb4a078cb9bf1e4b3e3n;
 
 await (async () => {

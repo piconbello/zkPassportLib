@@ -23,7 +23,7 @@
     "npm:asn1js@^3.0.5": "3.0.5",
     "npm:i18n-iso-countries@^7.12.0": "7.13.0",
     "npm:jsrsasign@^11.1.0": "11.1.0",
-    "npm:mina-credentials@~0.2.2": "0.2.7_o1js@2.2.0",
+    "npm:mina-credentials@~0.2.7": "0.2.7_o1js@2.2.0",
     "npm:mrz@^4.2.0": "4.2.1",
     "npm:o1js@*": "2.2.0",
     "npm:o1js@2": "2.2.0",
@@ -231,7 +231,7 @@
       "npm:asn1js@^3.0.5",
       "npm:i18n-iso-countries@^7.12.0",
       "npm:jsrsasign@^11.1.0",
-      "npm:mina-credentials@~0.2.2",
+      "npm:mina-credentials@~0.2.7",
       "npm:mrz@^4.2.0",
       "npm:o1js@2",
       "npm:pkijs@^3.2.4"

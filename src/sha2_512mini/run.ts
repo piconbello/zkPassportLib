@@ -1,6 +1,6 @@
 import { ZkProgram } from 'o1js';
 import { SHA512MiniWrapper, hashVerify, formatCheck } from './sha2_512mini.ts';
-import { sampleDG1BigInt, sha512Bigint, makeChunkFromDG1Bytes, DG1BytesFromBase64, sampleDG1HashBigInt } from './utils.ts';
+import { sampleDG1ChunkBigInt, sha512Bigint, makeChunkFromDG1Bytes, DG1BytesFromBase64, sampleDG1HashBigInt } from './utils.ts';
 
 let sha2mini512ZkProgram = ZkProgram({
   name: 'sha2-mini-verify',
@@ -29,7 +29,7 @@ await sha2mini512ZkProgram.compile({ forceRecompile: forceRecompileEnabled });
 console.timeEnd('compile');
 
 console.time('generate DG1 parameters and inputs');
-const input2 = SHA512MiniWrapper.from(sampleDG1BigInt, sampleDG1HashBigInt);
+const input2 = SHA512MiniWrapper.from(sampleDG1ChunkBigInt, sampleDG1HashBigInt);
 console.timeEnd('generate DG1 parameters and inputs');
 
 console.time('prove DG1');

@@ -4,7 +4,7 @@ import {
   hashVerify,
   formatCheck,
 } from './sha2_512mini.ts';
-import { sampleDG1BigInt, sampleDG1HashBigInt } from "./utils.ts";
+import { sampleDG1ChunkBigInt, sampleDG1HashBigInt } from "./utils.ts";
 
 describe("SHA2_512MINI verification tests", () => {
   it("should accept a simple SHA2-512 hash", () => {
@@ -16,7 +16,7 @@ describe("SHA2_512MINI verification tests", () => {
 
   it("should accept a dg1 with its hash", () => {
     const input = SHA512MiniWrapper.from(
-      sampleDG1BigInt,
+      sampleDG1ChunkBigInt,
       sampleDG1HashBigInt
     );
     hashVerify(input);
