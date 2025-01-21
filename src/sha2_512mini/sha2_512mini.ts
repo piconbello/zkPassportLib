@@ -64,18 +64,18 @@ const mask = 0xffffffffffffffffn;
 
 const DG1_HEADER_CONSTANT =UInt64.from(0x615b5f1f58503c00n);
 const MASK_FIRST_7BYTES = UInt64.from(0xffffffffffffff00n);
-const FOOTER_CONSTANT = UInt64.from(0x0000000000100000n);
+const FOOTER_CONSTANT = UInt64.from(0x0000000000800000n);
 const MASK_LAST_24BIT = UInt64.from(0x0000000000ffffffn);
 const ZERO = UInt64.from(0x0000000000000000n);
 const LENGTH_PART = UInt64.from(744n);
 
-export class MRZWrapper extends Struct({
+export class SHA512MiniWrapper extends Struct({
   data: UInt64_16,
   hash: UInt64_8,
   value: Unconstrained.withEmpty(0n),
   hashValue: Unconstrained.withEmpty(0n),
 }) {
-  static from(x: bigint, hx: bigint): MRZWrapper {
+  static from(x: bigint, hx: bigint): SHA512MiniWrapper {
     let data: UInt64[] = [];
     let value = x;
     for (let i = 0; i < 16; ++i) {
@@ -97,7 +97,7 @@ export class MRZWrapper extends Struct({
       throw new Error("Hash value is not 512-bit integer");
     }
 
-    return new MRZWrapper({ data, value: Unconstrained.from(value), hash, hashValue: Unconstrained.from(hashValue) });
+    return new SHA512MiniWrapper({ data, value: Unconstrained.from(value), hash, hashValue: Unconstrained.from(hashValue) });
   }
 
   static override check(x: { data: UInt64[], hash: UInt64[] }) {
@@ -110,19 +110,19 @@ export class MRZWrapper extends Struct({
   }
 }
 
-function formatCheck(x: MRZWrapper) {
+export function formatCheck(x: SHA512MiniWrapper) {
   // format validation of input.
   (x.data[0].and(MASK_FIRST_7BYTES)).assertEquals(DG1_HEADER_CONSTANT);
-  // WHAT'S IN BETWEEN IS DYNAMIC AND CORRESPONDS TO MRZ CONTENT.
+  // WHAT'S IN BETWEEN IS DYNAMIC AND CORRESPONDS TO SHA512Mini CONTENT.
   (x.data[11].and(MASK_LAST_24BIT)).assertEquals(FOOTER_CONSTANT);
   for (let i = 12; i < 15; ++i) {
     x.data[i].assertEquals(ZERO);
   }
   x.data[15].assertEquals(LENGTH_PART);
-  // TODO add checks for other stuff in mrz..
+  // TODO add checks for other stuff in SHA512Mini..
 }
 
-export function hashVerify(input: MRZWrapper) { // return big endian coded uint64 array of length 8.
+export function hashVerify(input: SHA512MiniWrapper) { // return big endian coded uint64 array of length 8.
   // hash the input.
   const w: UInt64[] = [];
   for (let i = 0; i < 16; ++i) {
@@ -138,50 +138,73 @@ export function hashVerify(input: MRZWrapper) { // return big endian coded uint6
   };
 
   // Initialize working variables to current hash value:
-  const v: UInt64[] = [];
-  for (let i = 0; i < 8; ++i) {
-    v.push(UInt64.from(initialHashValues[i]));
-  }
+ 
+
+  let a = UInt64.from(initialHashValues[0]);
+  let b = UInt64.from(initialHashValues[1]);
+  let c = UInt64.from(initialHashValues[2]);
+  let d = UInt64.from(initialHashValues[3]);
+  let e = UInt64.from(initialHashValues[4]);
+  let f = UInt64.from(initialHashValues[5]);
+  let g = UInt64.from(initialHashValues[6]);
+  let h = UInt64.from(initialHashValues[7]);
+
 
   // Compression function main loop:
   for (let i = 0; i < 80; ++i) {
-    const ai = (80-i)%8;
-    const bi = (ai+1)%8;
-    const ci = (ai+2)%8;
-    const di = (ai+3)%8;
-    const ei = (ai+4)%8;
-    const fi = (ai+5)%8;
-    const gi = (ai+6)%8;
-    const hi = (ai+7)%8;
+    // const ai = (80-i)%8;
+    // const bi = (ai+1)%8;
+    // const ci = (ai+2)%8;
+    // const di = (ai+3)%8;
+    // const ei = (ai+4)%8;
+    // const fi = (ai+5)%8;
+    // const gi = (ai+6)%8;
+    // const hi = (ai+7)%8;
 
-    const S1 = ( v[ei].rotate(14, 'right') ).xor( v[ei].rotate(18, 'right') ).xor( v[ei].rotate(41, 'right') );
-    const ch = ( v[ei].and(v[fi]) ).xor( v[ei].not().and(v[gi]) ); 
-    const temp1 = v[hi].addMod64(S1).addMod64(ch).addMod64(roundConstants[i]).addMod64(w[i]);
-    const S0 = ( v[ai].rotate(28, 'right') ).xor( v[ai].rotate(34, 'right') ).xor( v[ai].rotate(39, 'right') );
-    const maj = ( v[ai].and(v[bi]) ).xor( v[ai].and(v[ci]) ).xor( v[bi].and(v[ci]) );
+    const S1 = ( e.rotate(14, 'right') ).xor( e.rotate(18, 'right') ).xor( e.rotate(41, 'right') );
+    const ch = ( e.and(f) ).xor( e.not().and(g) ); 
+    const temp1 = h.addMod64(S1).addMod64(ch).addMod64(roundConstants[i]).addMod64(w[i]);
+    const S0 = ( a.rotate(28, 'right') ).xor( a.rotate(34, 'right') ).xor( a.rotate(39, 'right') );
+    const maj = ( a.and(b) ).xor( a.and(c) ).xor( b.and(c) );
     const temp2 = S0.addMod64(maj);
 
-    v[di] = v[di].addMod64(temp1);
-    v[ai] = temp1.addMod64(temp2);
+    h = g;
+    g = f;
+    f = e;
+    e = d.addMod64(temp1);
+    d = c;
+    c = b;
+    b = a;
+    a = temp1.addMod64(temp2);
   }
+
+  const v: UInt64[] = [];
+  v.push(a);
+  v.push(b);
+  v.push(c);
+  v.push(d);
+  v.push(e);
+  v.push(f);
+  v.push(g);
+  v.push(h);
 
   for (let i = 0; i < 8; ++i) {
     v[i] = v[i].addMod64(initialHashValues[i]);
   }
 
-  for (let i = 0; i < 16; ++i) {
-    console.log(`#${i.toString().padStart(2, '0')}: ${
-      input.data[i].toBigInt().toString(16).padStart(16, '0')
-    }`);
-  }
+  // for (let i = 0; i < 16; ++i) {
+  //   console.log(`#${i.toString().padStart(2, '0')}: ${
+  //     input.data[i].toBigInt().toString(16).padStart(16, '0')
+  //   }`);
+  // }
 
   for (let i = 0; i < 8; ++i) {
-    console.log(`
-    #${i}: ${
-      input.hash[i].toBigInt().toString(16).padStart(16,'0')
-    } = ${
-      v[i].toBigInt().toString(16).padStart(16,'0')
-    }`)
-    // input.hash[i].assertEquals(v[i]);
+    // console.log(`
+    // #${i}: ${
+    //   input.hash[i].toBigInt().toString(16).padStart(16,'0')
+    // } = ${
+    //   v[i].toBigInt().toString(16).padStart(16,'0')
+    // }`)
+    Provable.assertEqual(UInt64, input.hash[i], v[i]);
   }
 }
